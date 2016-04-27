@@ -2,8 +2,8 @@ package com.example.myafinal;
 
 import java.lang.reflect.Field;
 
-import com.example.myafinal.util.MyClickListener;
-import com.example.myafinal.util.ViewInject;
+import com.example.myafinal.ioc.MyClickListener;
+import com.example.myafinal.ioc.ViewInject;
 
 import android.app.Activity;
 import android.view.View;

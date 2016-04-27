@@ -1,4 +1,4 @@
-package com.example.myafinal.util;
+package com.example.myafinal.http;
 
 public abstract class AjaxCallBack<T> {
 

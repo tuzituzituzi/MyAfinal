@@ -15,6 +15,8 @@ import java.util.Map;
 
 
 
+
+
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -40,9 +42,9 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.SyncBasicHttpContext;
 
-import com.example.myafinal.util.AjaxCallBack;
-import com.example.myafinal.util.AjaxParams;
-import com.example.myafinal.util.HttpHandlerTask;
+import com.example.myafinal.http.AjaxCallBack;
+import com.example.myafinal.http.AjaxParams;
+import com.example.myafinal.http.HttpHandlerTask;
 
 public class FinalHttp {
 	
@@ -59,6 +61,8 @@ public class FinalHttp {
     private final DefaultHttpClient httpClient;
     
     private final Map<String, String> clientHeaderMap;
+    
+    private String charset = "utf-8";
     
     
 	private FinalHttp(){
@@ -105,6 +109,15 @@ public class FinalHttp {
 		
 	}
 	
+	private static FinalHttp mFinalHttp;
+	
+	public static FinalHttp create() {
+		if(mFinalHttp == null){
+			mFinalHttp = new FinalHttp();
+		}
+		return mFinalHttp;
+	}
+	
 	public void addHeader(String header, String value){
 		clientHeaderMap.put(header, value);
 	}
@@ -116,6 +129,7 @@ public class FinalHttp {
 
 	public void get(String url, AjaxParams params,
 			AjaxCallBack<? extends Object> callBack) {
+		
 		sendRequest(httpClient, httpContext, new HttpGet(getUrlWithQueryString(url,params)), null, callBack);
 		
 	}
@@ -127,19 +141,21 @@ public class FinalHttp {
 			String paramString = params.getParamString();
 			url += "?" + paramString;
 		}
-		return null;
+		System.out.println("geturl "+url);
+		return url;
 	}
 	
 	
-	protected void sendRequest(DefaultHttpClient client,
+	protected <T> void sendRequest(DefaultHttpClient client,
 			HttpContext httpContext, HttpUriRequest uriRequest, String contentType,
-			AjaxCallBack<? extends Object> callBack) {
+			AjaxCallBack<T> callBack) {
+		System.out.println("sendReques "+ uriRequest.toString());
 		if(contentType != null){
 			uriRequest.addHeader("Content-Type",contentType);
 		}
 		
-		HttpHandlerTask<T> handlerTask = new HttpHandlerTask<>(client, httpContext, callBack, charset);
-		handlerTask.executeOnExecutor(executor, uriRequest);
+		HttpHandlerTask<T> handlerTask = new HttpHandlerTask<T>(client, httpContext, callBack, charset);
+		handlerTask.execute(uriRequest);
 	}
 
 }
